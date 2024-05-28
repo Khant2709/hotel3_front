@@ -1,0 +1,138 @@
+.main {
+    width: var(--widthComputer);
+    margin: 0 auto 4rem;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.containerMain {
+    margin-top: 4rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.description {
+    width: 45%;
+    padding: 1rem 0;
+    font-size: calc(16px + (40 - 16) * (100vw - 480px) / (1920 - 480));
+
+    align-self: center;
+}
+
+.line {
+    margin: 0 1rem;
+    border: 6px solid var(--colorBlue);
+}
+
+.wrapperList {
+    width: 45%;
+    padding: 1rem 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.containerList {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+}
+
+.containerList:last-child {
+    margin-bottom: 0;
+}
+
+.img {
+    width: calc(56px + (72 - 56) * (100vw - 768px) / (1920 - 768));
+    height: auto;
+    margin-right: 2rem;
+}
+
+.containerList p {
+    font-size: calc(14px + (24 - 14) * (100vw - 480px) / (1920 - 480));
+}
+
+
+@media (max-width: 1600px) {
+    .main {
+        width: var(--width1600);
+    }
+}
+
+@media (max-width: 1250px) {
+    .main {
+        width: var(--width1250);
+    }
+}
+
+@media (max-width: 900px) {
+    .main {
+        margin: 0 auto 2rem;
+    }
+
+    .containerMain {
+        margin-top: 2rem;
+    }
+
+    .line {
+        border: 4px solid var(--colorBlue);
+    }
+}
+
+@media (max-width: 768px) {
+    .containerMain {
+        display: flex;
+        flex-direction: column;
+        justify-content: normal;
+    }
+
+    .description {
+        width: 100%;
+        padding: 0;
+        text-align: center;
+
+        align-self: normal;
+    }
+
+    .line {
+        margin: 2rem 0;
+    }
+
+    .wrapperList {
+        width: 100%;
+        padding: 0;
+
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .containerList {
+        max-width: 14rem;
+        margin: 0 1rem 1rem;
+
+        flex-direction: column;
+    }
+
+    .containerList:last-child {
+        margin: 0;
+    }
+
+    .img {
+        margin-right: 0;
+    }
+
+    .containerList p {
+        max-width: 10rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .line {
+        border: 2px solid var(--colorBlue);
+        margin: 1rem 0;
+    }
+}

@@ -1,95 +1,99 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import FirstSection from "../particles/mainPage/firstSection/firstSection";
+import SecondSection from "../particles/mainPage/secondSection/secondSection";
+import ThirdSection from "../particles/mainPage/thirdSection/thirdSection";
+import FourthSection from "../particles/mainPage/fourthSection/fourthSection";
+import FifthSection from "../particles/mainPage/fifthSection/fifthSection";
+import SixSection from "../particles/mainPage/sixSection/sixSection";
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+import FormSearchDate from "../../components/formSerchDate/formSerchDate";
+import HeaderLineBackground from "../../components/headerLineBackgrund/headerLineBackground";
+import ErrorLadingData from "../../components/errorLadingData/errorLadingData";
+
+import {validateArray, validateObject} from "../../utils/validate/validateGettingData";
+import {getAllData} from "../../utils/axios";
+import allRequest from "../../utils/allRequest";
+
+import {numberCurrentHotel} from "../../informationData/contacts";
+import {jsonLDMainPage} from "../../metaSeo/seoData";
+import {metaDataMainPage} from "../../metaSeo/metaData";
+
+import styles from "../styles/page.module.css";
+
+
+export const metadata = metaDataMainPage
+
+async function getData() {
+    const hotelData = {
+        currentHotel: null,
+        apartmentsFromHotel: [],
+        questionList: []
+    };
+
+    const request = [
+        () => getAllData.currentHotels(numberCurrentHotel),
+        () => getAllData.apartmentsFromHotel(numberCurrentHotel),
+        () => getAllData.getQuestion(numberCurrentHotel),
+    ];
+
+    return await allRequest(hotelData, request);
+}
+
+export default async function Home() {
+    const {currentHotel, apartmentsFromHotel, questionList} = await getData();
+
+    const validateCurrentHotel = validateObject(currentHotel);
+    const validateApartmentsFromHotel = validateArray(apartmentsFromHotel);
+    const validateQuestionList = validateArray(questionList);
+
+    if (validateCurrentHotel) {
+        return <main className={styles.main}>
+            <HeaderLineBackground hotelNumber={numberCurrentHotel} display={true}/>
+            <ErrorLadingData text={'Ошибка! Не удалось загрузить данные отеля.'}
+                             page={'Страница Главная, Home => currentHotel'}
+                             error={currentHotel}
             />
-          </a>
-        </div>
-      </div>
+        </main>
+    }
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+    return (
+        <>
+            <script type="application/ld+json"
+                    dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLDMainPage)}}
+            />
+            <main className={styles.main}>
+                {currentHotel && <>
+                    <FirstSection numberHotel={currentHotel.numberHotel} nameHotel={currentHotel.nameHotel}/>
+                    <div className={styles.wrapperForm}>
+                        <FormSearchDate/>
+                    </div>
+                    {!validateApartmentsFromHotel
+                        ? <SecondSection numberHotel={numberCurrentHotel}
+                                         apartments={apartmentsFromHotel}
+                        />
+                        : <div className={styles.wrapperErrorSecondSection}>
+                            <ErrorLadingData text={'Ошибка! Не удалось загрузить данные номеров отеля.'}
+                                             page={'mainPage => SecondSection'}
+                                             error={apartmentsFromHotel}
+                            />
+                        </div>
+                    }
+                    <FourthSection numberHotel={numberCurrentHotel}
+                                   descriptionHotel={currentHotel.descriptionHotel}
+                    />
+                    <ThirdSection description={currentHotel.beachInformation}/>
+                    {!validateQuestionList
+                        ? <FifthSection numberHotel={numberCurrentHotel} questionList={questionList} hasSlice={true}/>
+                        : <div className={styles.wrapperErrorFifthSection}>
+                            <ErrorLadingData text={'Ошибка! Не удалось загрузить блок вопрос-ответ.'}
+                                             page={'mainPage => FifthSection'}
+                                             error={questionList}
+                            />
+                        </div>
+                    }
+                    <SixSection address={currentHotel.address}/>
+                </>
+                }
+            </main>
+        </>
+    );
 }
